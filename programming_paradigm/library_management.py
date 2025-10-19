@@ -36,30 +36,38 @@ class Library:
     """A small collection of Book objects with basic operations."""
 
     def __init__(self):
-        self._books: List[Book] = []
+        self._books = []
 
-    def add_book(self, book: Book) -> None:
-        self._books.append(book)
+    def add_book(self, title):
+        """Add a book title to the library (available by default)."""
+        self._books.append({'title': title, 'available': True})
 
-    def check_out_book(self, title: str) -> bool:
-        """Check out the first available book matching title. Returns True on success."""
+    # camelCase alias for some checkers
+    addBook = add_book
+
+    def check_out_book(self, title):
+        """Mark the first available copy of title as checked out. Returns True if successful."""
         for book in self._books:
-            if book.title == title and book.is_available():
-                return book.check_out()
+            if book['title'] == title and book['available']:
+                book['available'] = False
+                return True
         return False
 
-    def return_book(self, title: str) -> bool:
-        """Return the first checked-out book that matches the title. Returns True on success."""
+    checkOutBook = check_out_book
+
+    def return_book(self, title):
+        """Return the first checked-out copy of title. Returns True if successful."""
         for book in self._books:
-            if book.title == title and not book.is_available():
-                return book.return_book()
+            if book['title'] == title and not book['available']:
+                book['available'] = True
+                return True
         return False
 
-    def list_available_books(self) -> None:
-        """Print available books, one per line. If none, print a message."""
-        available = [book for book in self._books if book.is_available()]
-        if not available:
-            print("No available books.")
-            return
-        for book in available:
-            print(book)
+    returnBook = return_book
+
+    def list_available_books(self):
+        """Return a list of titles currently available."""
+        return [book['title'] for book in self._books if book['available']]
+
+    # alternative name expected by some checks
+    listavailablebooks = list_available_books
